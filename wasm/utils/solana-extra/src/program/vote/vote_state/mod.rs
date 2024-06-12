@@ -1212,7 +1212,7 @@ pub fn authorize<S: std::hash::BuildHasher>(
         }
     }
 
-    vote_account.set_state(&VoteStateVersions::new_current(vote_state), feature_set)
+    vote_account.set_state(&VoteStateVersions::new_current(vote_state))
 }
 
 /// Update the node_pubkey, requires signature of the authorized voter
@@ -1220,7 +1220,7 @@ pub fn update_validator_identity<S: std::hash::BuildHasher>(
     vote_account: &mut BorrowedAccount,
     node_pubkey: &Pubkey,
     signers: &HashSet<Pubkey, S>,
-    feature_set: &FeatureSet,
+    _feature_set: &FeatureSet,
 ) -> Result<(), InstructionError> {
     let mut vote_state: VoteState = vote_account
         .get_state::<VoteStateVersions>()?
@@ -1234,7 +1234,7 @@ pub fn update_validator_identity<S: std::hash::BuildHasher>(
 
     vote_state.node_pubkey = *node_pubkey;
 
-    vote_account.set_state(&VoteStateVersions::new_current(vote_state), feature_set)
+    vote_account.set_state(&VoteStateVersions::new_current(vote_state))
 }
 
 /// Update the vote account's commission
@@ -1242,7 +1242,7 @@ pub fn update_commission<S: std::hash::BuildHasher>(
     vote_account: &mut BorrowedAccount,
     commission: u8,
     signers: &HashSet<Pubkey, S>,
-    feature_set: &FeatureSet,
+    _feature_set: &FeatureSet,
 ) -> Result<(), InstructionError> {
     let mut vote_state: VoteState = vote_account
         .get_state::<VoteStateVersions>()?
@@ -1253,7 +1253,7 @@ pub fn update_commission<S: std::hash::BuildHasher>(
 
     vote_state.commission = commission;
 
-    vote_account.set_state(&VoteStateVersions::new_current(vote_state), feature_set)
+    vote_account.set_state(&VoteStateVersions::new_current(vote_state))
 }
 
 fn verify_authorized_signer<S: std::hash::BuildHasher>(
@@ -1278,7 +1278,7 @@ pub fn withdraw<S: std::hash::BuildHasher>(
     signers: &HashSet<Pubkey, S>,
     rent_sysvar: Option<&Rent>,
     clock: Option<&Clock>,
-    feature_set: &FeatureSet,
+    _feature_set: &FeatureSet,
 ) -> Result<(), InstructionError> {
     // NOTE: solana-sdk 1.11 `try_borrow_account` is private(this lib was written in 1.10.29)
     // We use `try_borrow_instruction_account` to fix it.
@@ -1315,10 +1315,7 @@ pub fn withdraw<S: std::hash::BuildHasher>(
             // Deinitialize upon zero-balance
             // TODO:
             // datapoint_debug!("vote-account-close", ("allow", 1, i64));
-            vote_account.set_state(
-                &VoteStateVersions::new_current(VoteState::default()),
-                feature_set,
-            )?;
+            vote_account.set_state(&VoteStateVersions::new_current(VoteState::default()))?;
         }
     } else if let Some(rent_sysvar) = rent_sysvar {
         let min_rent_exempt_balance = rent_sysvar.minimum_balance(vote_account.get_data().len());
@@ -1327,13 +1324,13 @@ pub fn withdraw<S: std::hash::BuildHasher>(
         }
     }
 
-    vote_account.checked_sub_lamports(lamports, feature_set)?;
+    vote_account.checked_sub_lamports(lamports)?;
     drop(vote_account);
     // NOTE: solana-sdk 1.11 `try_borrow_account` is private(this lib was written in 1.10.29)
     // We use `try_borrow_instruction_account` to fix it.
     let mut to_account = instruction_context
         .try_borrow_instruction_account(transaction_context, to_account_index)?;
-    to_account.checked_add_lamports(lamports, feature_set)?;
+    to_account.checked_add_lamports(lamports)?;
     Ok(())
 }
 
@@ -1345,7 +1342,7 @@ pub fn initialize_account<S: std::hash::BuildHasher>(
     vote_init: &VoteInit,
     signers: &HashSet<Pubkey, S>,
     clock: &Clock,
-    feature_set: &FeatureSet,
+    _feature_set: &FeatureSet,
 ) -> Result<(), InstructionError> {
     if vote_account.get_data().len() != VoteState::size_of() {
         return Err(InstructionError::InvalidAccountData);
@@ -1359,10 +1356,9 @@ pub fn initialize_account<S: std::hash::BuildHasher>(
     // node must agree to accept this vote account
     verify_authorized_signer(&vote_init.node_pubkey, signers)?;
 
-    vote_account.set_state(
-        &VoteStateVersions::new_current(VoteState::new(vote_init, clock)),
-        feature_set,
-    )
+    vote_account.set_state(&VoteStateVersions::new_current(VoteState::new(
+        vote_init, clock,
+    )))
 }
 
 fn verify_and_get_vote_state<S: std::hash::BuildHasher>(
@@ -1401,7 +1397,7 @@ pub fn process_vote<S: std::hash::BuildHasher>(
             .ok_or(VoteError::EmptySlots)
             .and_then(|slot| vote_state.process_timestamp(*slot, timestamp))?;
     }
-    vote_account.set_state(&VoteStateVersions::new_current(vote_state), feature_set)
+    vote_account.set_state(&VoteStateVersions::new_current(vote_state))
 }
 
 pub fn process_vote_state_update<S: std::hash::BuildHasher>(
@@ -1421,7 +1417,7 @@ pub fn process_vote_state_update<S: std::hash::BuildHasher>(
         clock.epoch,
         Some(feature_set),
     )?;
-    vote_account.set_state(&VoteStateVersions::new_current(vote_state), feature_set)
+    vote_account.set_state(&VoteStateVersions::new_current(vote_state))
 }
 
 pub fn create_account_with_authorized(
