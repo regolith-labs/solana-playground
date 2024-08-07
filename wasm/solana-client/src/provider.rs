@@ -36,7 +36,13 @@ impl HttpProvider {
 
         match serde_json::from_value::<ClientResponse>(request_result.clone()) {
             Ok(response) => Ok(response),
-            Err(_) => Err(serde_json::from_value::<ClientError>(request_result).unwrap()),
+            Err(err) => {
+                if let Ok(err) = serde_json::from_value::<ClientError>(request_result) {
+                    Err(err)
+                } else {
+                    Err(ClientError::new(&err.to_string()))
+                }
+            }
         }
     }
 }
