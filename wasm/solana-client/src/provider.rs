@@ -37,10 +37,10 @@ impl HttpProvider {
         match serde_json::from_value::<ClientResponse>(request_result.clone()) {
             Ok(response) => Ok(response),
             Err(err) => {
-                if let Ok(err) = serde_json::from_value::<ClientError>(request_result) {
+                if let Ok(err) = serde_json::from_value::<ClientError>(request_result.clone()) {
                     Err(err)
                 } else {
-                    Err(ClientError::new(&err.to_string()))
+                    Err(ClientError::new(&request_result.to_string()))
                 }
             }
         }
