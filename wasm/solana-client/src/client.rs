@@ -251,7 +251,7 @@ impl WasmClient {
     ) -> ClientResult<Signature> {
         let request =
             SendVersionedTransactionRequest::new_with_config(transaction.to_owned(), config).into();
-        let response = SendVersionedTransactionRequest::from(self.send(request).await?);
+        let response = SendVersionedTransactionResponse::from(self.send(request).await?);
 
         let signature: Signature = response.into();
 
