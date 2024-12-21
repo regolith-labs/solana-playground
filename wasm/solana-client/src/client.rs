@@ -20,7 +20,7 @@ use solana_sdk::{
     message::Message,
     pubkey::Pubkey,
     signature::Signature,
-    transaction::Transaction,
+    transaction::{Transaction, VersionedTransaction},
 };
 
 use crate::{
@@ -244,6 +244,31 @@ impl WasmClient {
         Ok(response.into())
     }
 
+    pub async fn send_versioned_transaction_with_config(
+        &self,
+        transaction: &VersionedTransaction,
+        config: RpcSendTransactionConfig,
+    ) -> ClientResult<Signature> {
+        let request =
+            SendVersionedTransactionRequest::new_with_config(transaction.to_owned(), config).into();
+        let response = SendVersionedTransactionRequest::from(self.send(request).await?);
+
+        let signature: Signature = response.into();
+
+        // A mismatching RPC response signature indicates an issue with the RPC node, and
+        // should not be passed along to confirmation methods. The transaction may or may
+        // not have been submitted to the cluster, so callers should verify the success of
+        // the correct transaction signature independently.
+        if signature != transaction.signatures[0] {
+            Err(ClientError::new(&format!(
+                "RPC node returned mismatched signature {:?}, expected {:?}",
+                signature, transaction.signatures[0]
+            )))
+        } else {
+            Ok(transaction.signatures[0])
+        }
+    }
+
     pub async fn send_transaction_with_config(
         &self,
         transaction: &Transaction,
@@ -271,6 +296,21 @@ impl WasmClient {
 
     pub async fn send_transaction(&self, transaction: &Transaction) -> ClientResult<Signature> {
         self.send_transaction_with_config(
+            transaction,
+            RpcSendTransactionConfig {
+                preflight_commitment: Some(self.commitment()),
+                encoding: Some(UiTransactionEncoding::Base64),
+                ..Default::default()
+            },
+        )
+        .await
+    }
+
+    pub async fn send_versioned_transaction(
+        &self,
+        transaction: &VersionedTransaction,
+    ) -> ClientResult<Signature> {
+        self.send_versioned_transaction_with_config(
             transaction,
             RpcSendTransactionConfig {
                 preflight_commitment: Some(self.commitment()),

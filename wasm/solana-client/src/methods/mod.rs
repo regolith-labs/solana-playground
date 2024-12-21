@@ -33,6 +33,7 @@ mod program_accounts;
 mod recent_performance_samples;
 mod request_airdrop;
 mod send_transaction;
+mod send_versioned_transaction;
 mod serde_utils;
 mod signature_statuses;
 mod signatures_for_address;
@@ -92,6 +93,9 @@ pub use {
     },
     request_airdrop::{RequestAirdropRequest, RequestAirdropResponse},
     send_transaction::{SendTransactionRequest, SendTransactionResponse},
+    send_versioned_transaction::{
+        SendVersionedTransactionRequest, SendVersionedTransactionResponse,
+    },
     signature_statuses::{
         GetSignatureStatusesRequest, GetSignatureStatusesResponse, SignatureStatusesValue,
     },
