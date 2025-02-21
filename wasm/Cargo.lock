@@ -2262,7 +2262,7 @@ dependencies = [
 
 [[package]]
 name = "solana-client-wasm"
-version = "2.1.13"
+version = "2.1.9"
 dependencies = [
  "async-trait",
  "base64 0.13.0",
@@ -2350,7 +2350,7 @@ dependencies = [
 
 [[package]]
 name = "solana-extra-wasm"
-version = "2.1.13"
+version = "2.1.9"
 dependencies = [
  "Inflector",
  "arrayref",
