@@ -1,4 +1,4 @@
-use std::fmt;
+use std::{collections::HashSet, fmt};
 
 use serde_json::Value;
 use solana_sdk::{
@@ -390,7 +390,7 @@ impl EncodableWithMeta for v0::Message {
     ) -> Self::Encoded {
         if encoding == UiTransactionEncoding::JsonParsed {
             let account_keys = AccountKeys::new(&self.account_keys, Some(&meta.loaded_addresses));
-            let loaded_message = LoadedMessage::new_borrowed(self, &meta.loaded_addresses);
+            let loaded_message = LoadedMessage::new_borrowed(self, &meta.loaded_addresses, &HashSet::new());
             UiMessage::Parsed(UiParsedMessage {
                 account_keys: parse_static_accounts(&loaded_message),
                 recent_blockhash: self.recent_blockhash.to_string(),
