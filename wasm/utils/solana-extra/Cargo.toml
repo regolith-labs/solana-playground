@@ -14,32 +14,32 @@ readme = "README.md"
 crate-type = ["cdylib", "rlib"]
 
 [dependencies]
-Inflector = "0.11"
-arrayref = "0.3"
-assert_matches = "1"
-base64 = "0.13"
-bincode = "1"
-borsh = "0.10"
-bs58 = "0.4"
-bytemuck = "1"
-chrono = { version = "0.4", features = ["serde"] }
-clap = "3"
-console = "0.15"
-fluvio-wasm-timer = "0.2"
-humantime = "2"
-lazy_static = "1"
-log = "0.4.17" # only for nightly builds
-num-derive = "0.3"
-num-traits = "0.2"
-num_enum = "0.5"
-semver = "1"
-serde = "1"
-serde_derive = "1"
-serde_json = "1"
-solana-frozen-abi = "2.1.9"
-solana-frozen-abi-macro = "2.1.9"
-solana-sdk = "2.1.9"
-thiserror = "1"
+Inflector = { workspace = true }
+arrayref = { workspace = true }
+assert_matches = { workspace = true }
+base64 = { workspace = true }
+bincode = { workspace = true }
+borsh = { workspace = true }
+bs58 = { workspace = true }
+bytemuck = { workspace = true }
+chrono = { workspace = true, features = ["serde"] }
+clap = { workspace = true }
+console = { workspace = true }
+fluvio-wasm-timer = { workspace = true }
+humantime = { workspace = true }
+lazy_static = { workspace = true }
+log = { workspace = true } # only for nightly builds
+num-derive = { workspace = true }
+num-traits = { workspace = true }
+num_enum = { workspace = true }
+semver = { workspace = true }
+serde = { workspace = true }
+serde_derive = { workspace = true }
+serde_json = { workspace = true }
+solana-frozen-abi = { workspace = true }
+solana-frozen-abi-macro = { workspace = true }
+solana-sdk = { workspace = true }
+thiserror = { workspace = true }
 
 [build-dependencies]
-rustc_version = "0.4"
+rustc_version = { workspace = true }
