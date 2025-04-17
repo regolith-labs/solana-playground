@@ -1,17 +1,17 @@
 use solana_extra_wasm::{account_decoder::UiAccount, transaction_status::UiTransactionEncoding};
-use solana_sdk::transaction::{Transaction, TransactionError};
+use solana_sdk::transaction::{Transaction, TransactionError, VersionedTransaction};
 
 use crate::{utils::rpc_config::RpcSimulateTransactionConfig, ClientRequest, ClientResponse};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct SimulateTransactionRequest {
-    pub transaction: Transaction,
+    pub transaction: VersionedTransaction,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub config: Option<RpcSimulateTransactionConfig>,
 }
 
 impl SimulateTransactionRequest {
-    pub fn new(transaction: Transaction) -> Self {
+    pub fn new(transaction: VersionedTransaction) -> Self {
         Self {
             transaction,
             config: Some(RpcSimulateTransactionConfig {
@@ -21,7 +21,7 @@ impl SimulateTransactionRequest {
             }),
         }
     }
-    pub fn new_with_config(transaction: Transaction, config: RpcSimulateTransactionConfig) -> Self {
+    pub fn new_with_config(transaction: VersionedTransaction, config: RpcSimulateTransactionConfig) -> Self {
         Self {
             transaction,
             config: Some(config),

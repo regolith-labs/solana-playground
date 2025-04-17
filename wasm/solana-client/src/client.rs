@@ -1005,7 +1005,7 @@ impl WasmClient {
 
     pub async fn simulate_transaction_with_config(
         &self,
-        transaction: &Transaction,
+        transaction: &VersionedTransaction,
         config: RpcSimulateTransactionConfig,
     ) -> ClientResult<SimulateTransactionResponse> {
         let request =
@@ -1016,7 +1016,7 @@ impl WasmClient {
 
     pub async fn simulate_transaction(
         &self,
-        transaction: &Transaction,
+        transaction: &VersionedTransaction,
     ) -> ClientResult<SimulateTransactionResponse> {
         self.simulate_transaction_with_config(
             transaction,
